@@ -17,21 +17,7 @@ console.log("user input: " + userInput);
 console.log ("user command: " + userCommand);
 // console.log(args); to see what was processed
 // determine what command to execute
-switch (userCommand) {
-    case "movie-this":
-    getMovieInfo(userInput);
-    break;
-    case "my-tweets":
-    getTwitterInfo();
-    break;
-    case "do-what-it-says":
-    runFS();
-    break;
-    case "spotify-this-song":
-    songName = args.slice(1).join(" ");
-    getSpotifyInfo(songName);
-    break
-}
+determineChoice(userCommand,userInput);
 // get twitter data
 function getTwitterInfo() {
     var client = new Twitter({
@@ -118,10 +104,26 @@ function runFS(){
       return console.log(err);
     }
     var output = data.split(",");
-    console.log(data)
-    getMovieInfo(data[1]);//this isn't working for some reason as it's returning the character in the string. it should be the first element of the array 
+    determineChoice(output[0],output[1]);
     })
 }
+
+function determineChoice (userCommand,userInput) {
+    switch (userCommand) {
+        case "movie-this":
+        getMovieInfo(userInput);
+        break;
+        case "my-tweets":
+        getTwitterInfo();
+        break;
+        case "do-what-it-says":
+        runFS();
+        break;
+        case "spotify-this-song":
+        songName = args.slice(1).join(" ");
+        getSpotifyInfo(userInput);
+        break
+    }}
 // bonus log commands
 
 
