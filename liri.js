@@ -2,7 +2,7 @@ require("dotenv").config();
 var keys = require("./keys.js");
 var Twitter = require('twitter');
 var client = new Twitter(keys.twitter);
-// var spotify = new Spotify(keys.spotify);
+let Spotify = require('node-spotify-api');
 var request = require('request')
 var fs = require("fs");
 
@@ -11,10 +11,13 @@ var fs = require("fs");
 
 // take in commands using process.argv
 var args = process.argv.slice(2);
+var userCommand = process.argv[2] 
 var userInput = args.slice(1).join("+");
+console.log("user input: " + userInput);
+console.log ("user command: " + userCommand);
 // console.log(args); to see what was processed
 // determine what command to execute
-switch (process.argv[2]) {
+switch (userCommand) {
     case "movie-this":
     getMovieInfo(userInput);
     break;
@@ -23,6 +26,10 @@ switch (process.argv[2]) {
     break;
     case "do-what-it-says":
     runFS();
+    break;
+    case "spotify-this-song":
+    songName = args.slice(1).join(" ");
+    getSpotifyInfo(songName);
     break
 }
 // get twitter data
@@ -32,21 +39,35 @@ function getTwitterInfo() {
         consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
         access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY,
         access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
-      });
+    });
     var params = {screen_name: 'lokibeat'};
     client.get('statuses/user_timeline', params, function(error, tweets, response) {
-    if (!error) {
+        if (!error) {
             console.log("TWEETS")
-            console.log("______________")
-          tweets.forEach((tweet)=>{
-              console.log(tweet.text)
-          })
+            tweets.forEach((tweet)=>{
+                console.log("______________")
+                console.log(tweet.text)
+            })
         }
-            
+        
     })
 }
 
 // get spotify data
+function getSpotifyInfo (songName) {
+    console.log("Spotify requested for " + songName);
+    var spotify = new Spotify(keys.spotify);
+    spotify.search({type: 'track', query: songName}, function (err,data) {
+        if(err) {
+            return console.log("error occurred: " + err);
+        }
+    console.log("______________")
+    console.log("Artist: " + data.tracks.items[0].album.artists[0].name);
+    console.log("Song Name: " + songName.toUpperCase());
+    console.log("URL: " + data.tracks.items[0].album.external_urls.spotify);
+    console.log("From Album: " + data.tracks.items[0].album.name)
+    });
+}
 
 // get omdb data
 
